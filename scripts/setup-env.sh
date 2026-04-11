@@ -18,6 +18,32 @@ fi
 set -a; source .env; set +a
 
 # ──────────────────────────────────────────
+#  Resolver INFISICAL_TOKEN (opcional, solo equipo)
+# ──────────────────────────────────────────
+if [ -z "$INFISICAL_TOKEN" ] && command -v infisical > /dev/null 2>&1; then
+  echo ""
+  echo -e "  ${CYAN}Infisical CLI detectado. ¿Eres miembro del equipo de Carpil?${RESET}"
+  echo    "  Ingresa tu INFISICAL_TOKEN para obtener secrets automáticamente."
+  echo    "  (Presiona Enter para omitir si eres colaborador OSS)"
+  echo ""
+  printf "  → INFISICAL_TOKEN: "
+  read -rs TOKEN
+  echo ""
+
+  if [ -n "$TOKEN" ]; then
+    if grep -q "INFISICAL_TOKEN" .env; then
+      sed -i.bak "s|INFISICAL_TOKEN=.*|INFISICAL_TOKEN=$TOKEN|" .env && rm .env.bak
+    else
+      echo "INFISICAL_TOKEN=$TOKEN" >> .env
+    fi
+    export INFISICAL_TOKEN="$TOKEN"
+    echo -e "  ${GREEN}✓ INFISICAL_TOKEN guardado en .env${RESET}"
+  else
+    echo "  → Continuando como colaborador OSS..."
+  fi
+fi
+
+# ──────────────────────────────────────────
 #  Resolver NPM_TOKEN_GOOGLE_SIGN_IN
 # ──────────────────────────────────────────
 INFISICAL_PROJECT_ID="41a4242c-4634-4662-9d5d-bf90c31f841e"
