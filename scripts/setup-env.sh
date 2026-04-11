@@ -72,6 +72,17 @@ else
 fi
 
 # ──────────────────────────────────────────
+#  Verificar Infisical CLI (opcional en local)
+# ──────────────────────────────────────────
+if command -v infisical > /dev/null 2>&1; then
+  echo -e "  ✓ Infisical CLI disponible"
+else
+  echo -e "  ⚠ Infisical CLI no está instalado."
+  echo    "    Solo necesario para correr con datos de dev/preview/production."
+  echo    "    Instalar: brew install infisical/get-cli/infisical"
+fi
+
+# ──────────────────────────────────────────
 #  .env de submódulos
 # ──────────────────────────────────────────
 if [ ! -f api/.env ]; then cp api/.env.example api/.env; echo "  ✓ api/.env creado"; fi

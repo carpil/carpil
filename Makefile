@@ -1,6 +1,7 @@
 .PHONY: help setup dev seed clean \
         setup/submodules setup/deps setup/env \
-        dev/firebase dev/api dev/app
+        dev/firebase dev/api dev/app \
+        env/dev env/preview env/production
 
 # ──────────────────────────────────────────
 #  Carga .env automáticamente si existe
@@ -21,14 +22,18 @@ help:
 	@echo ""
 	@echo "$(CYAN)Carpil — comandos disponibles$(RESET)"
 	@echo ""
-	@echo "  make setup          Configura el entorno desde cero"
-	@echo "  make dev            Levanta Firebase + API + App en paralelo"
-	@echo "  make seed           Carga datos semilla en el emulador"
-	@echo "  make clean          Detiene contenedores y limpia artefactos"
+	@echo "  make setup            Configura el entorno local (emuladores)"
+	@echo "  make dev              Levanta Firebase + API + App en paralelo"
+	@echo "  make seed             Carga datos semilla en el emulador"
+	@echo "  make clean            Detiene contenedores y limpia artefactos"
 	@echo ""
-	@echo "  make dev/firebase   Solo emulador de Firebase"
-	@echo "  make dev/api        Solo API (Docker)"
-	@echo "  make dev/app        Solo React Native"
+	@echo "  make dev/firebase     Solo emulador de Firebase"
+	@echo "  make dev/api          Solo API (Docker)"
+	@echo "  make dev/app          Solo React Native"
+	@echo ""
+	@echo "  make env/dev          Jala secrets de desarrollo desde Infisical"
+	@echo "  make env/preview      Jala secrets de preview desde Infisical"
+	@echo "  make env/production   Jala secrets de producción desde Infisical"
 	@echo ""
 
 # ──────────────────────────────────────────
@@ -80,6 +85,18 @@ seed:
 	FIRESTORE_EMULATOR_HOST=localhost:8080 \
 	FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 \
 	node firebase/seed/seed.js
+
+# ──────────────────────────────────────────
+#  Env (Infisical)
+# ──────────────────────────────────────────
+env/dev:
+	@bash scripts/pull-env.sh dev
+
+env/preview:
+	@bash scripts/pull-env.sh preview
+
+env/production:
+	@bash scripts/pull-env.sh production
 
 # ──────────────────────────────────────────
 #  Clean
