@@ -62,7 +62,7 @@ if [ -n "$NPM_TOKEN_GOOGLE_SIGN_IN" ]; then
 elif [ -n "$INFISICAL_TOKEN" ] && command -v infisical > /dev/null 2>&1; then
   echo "  → Obteniendo NPM_TOKEN_GOOGLE_SIGN_IN desde Infisical..."
   TOKEN=$(infisical secrets get NPM_TOKEN_GOOGLE_SIGN_IN \
-    --env=development \
+    --env=dev \
     --projectId="$INFISICAL_PROJECT_ID" \
     --plain 2>/dev/null)
 

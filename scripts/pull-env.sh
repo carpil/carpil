@@ -14,9 +14,9 @@ INFISICAL_PROJECT_ID="41a4242c-4634-4662-9d5d-bf90c31f841e"
 ENV=$1
 
 case $ENV in
-  dev)        INFISICAL_ENV="development" ;;
+  dev)        INFISICAL_ENV="dev" ;;
   preview)    INFISICAL_ENV="preview" ;;
-  production) INFISICAL_ENV="production" ;;
+  production) INFISICAL_ENV="prod" ;;
   *)
     echo -e "${RED}Uso: make env/dev | make env/preview | make env/production${RESET}"
     exit 1
