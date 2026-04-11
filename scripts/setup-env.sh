@@ -20,9 +20,9 @@ set -a; source .env; set +a
 # ──────────────────────────────────────────
 #  Resolver INFISICAL_TOKEN (opcional, solo equipo)
 # ──────────────────────────────────────────
-if [ -z "$INFISICAL_TOKEN" ] && command -v infisical > /dev/null 2>&1; then
+if [ -z "$INFISICAL_TOKEN" ]; then
   echo ""
-  echo -e "  ${CYAN}Infisical CLI detectado. ¿Eres miembro del equipo de Carpil?${RESET}"
+  echo -e "  ${CYAN}¿Eres miembro del equipo de Carpil?${RESET}"
   echo    "  Ingresa tu INFISICAL_TOKEN para obtener secrets automáticamente."
   echo    "  (Presiona Enter para omitir si eres colaborador OSS)"
   echo ""
@@ -41,6 +41,14 @@ if [ -z "$INFISICAL_TOKEN" ] && command -v infisical > /dev/null 2>&1; then
   else
     echo "  → Continuando como colaborador OSS..."
   fi
+fi
+
+# Si tiene token pero no CLI, avisar
+if [ -n "$INFISICAL_TOKEN" ] && ! command -v infisical > /dev/null 2>&1; then
+  echo -e "  ${RED}✗ Tienes INFISICAL_TOKEN pero el CLI no está instalado.${RESET}"
+  echo    "    brew install infisical/get-cli/infisical"
+  echo    "    Luego vuelve a correr make setup."
+  exit 1
 fi
 
 # ──────────────────────────────────────────
