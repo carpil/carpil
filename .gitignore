@@ -6,6 +6,9 @@ node_modules/
 .env.local
 .env.*.local
 
+# Generado por make setup/npmrc — contiene tokens
+app/.npmrc
+
 # Firebase
 .firebase/
 firebase-debug.log
