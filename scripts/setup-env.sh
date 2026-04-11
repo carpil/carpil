@@ -20,8 +20,30 @@ set -a; source .env; set +a
 # ──────────────────────────────────────────
 #  Resolver NPM_TOKEN_GOOGLE_SIGN_IN
 # ──────────────────────────────────────────
+INFISICAL_PROJECT_ID="41a4242c-4634-4662-9d5d-bf90c31f841e"
+
 if [ -n "$NPM_TOKEN_GOOGLE_SIGN_IN" ]; then
   echo -e "  ✓ NPM_TOKEN_GOOGLE_SIGN_IN encontrado en entorno"
+
+elif [ -n "$INFISICAL_TOKEN" ] && command -v infisical > /dev/null 2>&1; then
+  echo "  → Obteniendo NPM_TOKEN_GOOGLE_SIGN_IN desde Infisical..."
+  TOKEN=$(infisical secrets get NPM_TOKEN_GOOGLE_SIGN_IN \
+    --env=development \
+    --projectId="$INFISICAL_PROJECT_ID" \
+    --plain 2>/dev/null)
+
+  if [ -z "$TOKEN" ]; then
+    echo -e "  ${RED}✗ No se encontró NPM_TOKEN_GOOGLE_SIGN_IN en Infisical.${RESET}"
+    exit 1
+  fi
+
+  if grep -q "NPM_TOKEN_GOOGLE_SIGN_IN" .env; then
+    sed -i.bak "s|NPM_TOKEN_GOOGLE_SIGN_IN=.*|NPM_TOKEN_GOOGLE_SIGN_IN=$TOKEN|" .env && rm .env.bak
+  else
+    echo "NPM_TOKEN_GOOGLE_SIGN_IN=$TOKEN" >> .env
+  fi
+  export NPM_TOKEN_GOOGLE_SIGN_IN="$TOKEN"
+  echo -e "  ${GREEN}✓ NPM_TOKEN_GOOGLE_SIGN_IN obtenido desde Infisical${RESET}"
 
 else
   echo ""
