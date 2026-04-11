@@ -15,7 +15,7 @@ pubsub-debug.log
 storage.rules.debug
 
 # Firebase emulator data (generated at runtime)
-emulator-data/
+firebase/emulator-data/
 
 # OS
 .DS_Store
