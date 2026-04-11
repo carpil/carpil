@@ -33,10 +33,15 @@ Luego continúa con `make setup`.
 
 ## Prerequisitos
 
-- Docker + Docker Compose
-- Node.js 22+
-- Java 11+ (requerido por Firebase Emulator Suite)
-- make
+| Herramienta | Requerido por | Instalación |
+|---|---|---|
+| Docker + Docker Compose | API | [docker.com](https://www.docker.com) |
+| Node.js 22+ | App + Seed | [nodejs.org](https://nodejs.org) |
+| Java 11+ | Firebase Emulator | `brew install openjdk@11` |
+| make | Orquestador | `brew install make` |
+| Infisical CLI | Solo equipo interno | `brew install infisical/get-cli/infisical` |
+
+> Colaboradores OSS no necesitan Infisical CLI.
 
 ## Comandos
 
@@ -46,6 +51,9 @@ Luego continúa con `make setup`.
 | `make dev` | Levanta Firebase + API + App en paralelo |
 | `make seed` | Carga datos semilla en el emulador |
 | `make clean` | Detiene contenedores y limpia artefactos |
+| `make env/dev` | Jala secrets de desarrollo desde Infisical |
+| `make env/preview` | Jala secrets de preview desde Infisical |
+| `make env/production` | Jala secrets de producción desde Infisical |
 
 ## Estructura
 
