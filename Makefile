@@ -1,5 +1,5 @@
 .PHONY: help setup dev seed clean \
-        setup/submodules setup/deps setup/env setup/npmrc \
+        setup/submodules setup/deps setup/env \
         dev/firebase dev/api dev/app
 
 # ──────────────────────────────────────────
@@ -34,7 +34,7 @@ help:
 # ──────────────────────────────────────────
 #  Setup
 # ──────────────────────────────────────────
-setup: setup/submodules setup/env setup/npmrc setup/deps
+setup: setup/submodules setup/env setup/deps
 	@echo "$(CYAN)✓ Setup completo. Ejecuta 'make dev' para iniciar.$(RESET)"
 
 setup/submodules:
@@ -43,23 +43,7 @@ setup/submodules:
 
 setup/env:
 	@echo "→ Configurando variables de entorno..."
-	@if [ ! -f .env ]; then \
-		cp .env.example .env; \
-		echo "  ✓ .env creado desde .env.example"; \
-	fi
-	@if [ -z "$(NPM_TOKEN_GOOGLE_SIGN_IN)" ]; then \
-		printf "  → NPM_TOKEN_GOOGLE_SIGN_IN (GitHub PAT con read:packages): "; \
-		read token; \
-		printf "NPM_TOKEN_GOOGLE_SIGN_IN=$$token\n" >> .env; \
-	fi
-	@if [ ! -f api/.env ]; then cp api/.env.example api/.env; echo "  ✓ api/.env creado"; fi
-	@if [ ! -f app/.env ]; then cp app/.env.example app/.env; echo "  ✓ app/.env creado"; fi
-
-setup/npmrc:
-	@echo "→ Generando app/.npmrc para paquetes privados..."
-	@printf "@react-native-google-signin:registry=https://npm.pkg.github.com\n" > app/.npmrc
-	@printf "//npm.pkg.github.com/:_authToken=$(NPM_TOKEN_GOOGLE_SIGN_IN)\n" >> app/.npmrc
-	@echo "  ✓ app/.npmrc listo"
+	@bash scripts/setup-env.sh
 
 setup/deps:
 	@echo "→ Instalando dependencias de app..."
@@ -102,7 +86,7 @@ seed:
 # ──────────────────────────────────────────
 clean:
 	@echo "→ Deteniendo contenedores..."
-	docker compose down
+	-docker compose down
 	@echo "→ Limpiando artefactos..."
 	rm -rf firebase/emulator-data app/.npmrc
 	@echo "$(CYAN)✓ Limpieza completa.$(RESET)"
