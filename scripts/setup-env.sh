@@ -23,22 +23,10 @@ set -a; source .env; set +a
 if [ -n "$NPM_TOKEN_GOOGLE_SIGN_IN" ]; then
   echo -e "  ✓ NPM_TOKEN_GOOGLE_SIGN_IN encontrado en entorno"
 
-elif command -v gh > /dev/null 2>&1 && gh auth status > /dev/null 2>&1; then
-  echo "  → Obteniendo token desde GitHub CLI..."
-  TOKEN=$(gh auth token)
-  # Actualiza o agrega la variable en .env
-  if grep -q "NPM_TOKEN_GOOGLE_SIGN_IN" .env; then
-    sed -i.bak "s|NPM_TOKEN_GOOGLE_SIGN_IN=.*|NPM_TOKEN_GOOGLE_SIGN_IN=$TOKEN|" .env && rm .env.bak
-  else
-    echo "NPM_TOKEN_GOOGLE_SIGN_IN=$TOKEN" >> .env
-  fi
-  export NPM_TOKEN_GOOGLE_SIGN_IN="$TOKEN"
-  echo -e "  ${GREEN}✓ Token obtenido desde GitHub CLI${RESET}"
-
 else
   echo ""
-  echo -e "  ${CYAN}Se necesita un GitHub PAT con scope 'read:packages'.${RESET}"
-  echo    "  Genera uno en: GitHub → Settings → Developer settings → Personal access tokens"
+  echo -e "  ${CYAN}Se necesita el token de acceso a paquetes privados de Carpil.${RESET}"
+  echo    "  Encuéntralo en la guía de contribución del proyecto."
   echo ""
   printf "  → NPM_TOKEN_GOOGLE_SIGN_IN: "
   read -rs TOKEN
