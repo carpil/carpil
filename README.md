@@ -35,7 +35,7 @@ Luego continúa con `make setup`.
 
 | Herramienta | Requerido por | Instalación |
 |---|---|---|
-| Docker + Docker Compose | API | [docker.com](https://www.docker.com) |
+| Docker + Docker Compose | API | `brew install --cask docker` |
 | Node.js 22+ | App + Seed | [nodejs.org](https://nodejs.org) |
 | Java 11+ | Firebase Emulator | `brew install openjdk@11` |
 | make | Orquestador | `brew install make` |
