@@ -1,0 +1,6 @@
+[submodule "app"]
+	path = app
+	url = https://github.com/carpil/app
+[submodule "api"]
+	path = api
+	url = https://github.com/carpil/api
