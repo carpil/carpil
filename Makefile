@@ -104,6 +104,14 @@ env/production:
 clean:
 	@echo "→ Deteniendo contenedores..."
 	-docker compose down
-	@echo "→ Limpiando artefactos..."
-	rm -rf firebase/emulator-data app/.npmrc
-	@echo "$(CYAN)✓ Limpieza completa.$(RESET)"
+	@echo "→ Eliminando dependencias..."
+	rm -rf app/node_modules
+	rm -rf firebase/seed/node_modules
+	@echo "→ Eliminando archivos generados..."
+	rm -rf app/ios app/android
+	rm -rf app/google-services.json app/GoogleService-Info.plist
+	rm -rf app/.npmrc
+	rm -rf firebase/emulator-data
+	@echo "→ Eliminando variables de entorno..."
+	rm -f app/.env api/.env .env
+	@echo "$(CYAN)✓ Reset completo. Corre 'make setup' para reiniciar.$(RESET)"
