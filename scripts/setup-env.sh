@@ -149,3 +149,64 @@ fi
 # ──────────────────────────────────────────
 if [ ! -f api/.env ]; then cp api/.env.example api/.env; echo "  ✓ api/.env creado"; fi
 if [ ! -f app/.env ]; then cp app/.env.example app/.env; echo "  ✓ app/.env creado"; fi
+
+# ──────────────────────────────────────────
+#  Google Services — placeholders para local
+# ──────────────────────────────────────────
+if [ ! -f app/google-services.json ]; then
+  cat > app/google-services.json << 'EOF'
+{
+  "project_info": {
+    "project_number": "000000000000",
+    "project_id": "demo-carpil",
+    "storage_bucket": "demo-carpil.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+        "android_client_info": { "package_name": "com.carpil.carpil" }
+      },
+      "api_key": [{ "current_key": "local_demo_key" }],
+      "services": { "appinvite_service": { "other_platform_oauth_client": [] } }
+    }
+  ],
+  "configuration_version": "1"
+}
+EOF
+  echo "  ✓ app/google-services.json (placeholder local)"
+fi
+
+if [ ! -f app/GoogleService-Info.plist ]; then
+  cat > app/GoogleService-Info.plist << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CLIENT_ID</key>
+  <string>000000000000-local.apps.googleusercontent.com</string>
+  <key>REVERSED_CLIENT_ID</key>
+  <string>com.googleusercontent.apps.000000000000-local</string>
+  <key>API_KEY</key>
+  <string>local_demo_key</string>
+  <key>GCM_SENDER_ID</key>
+  <string>000000000000</string>
+  <key>PLIST_VERSION</key>
+  <string>1</string>
+  <key>BUNDLE_ID</key>
+  <string>com.carpil.carpil</string>
+  <key>PROJECT_ID</key>
+  <string>demo-carpil</string>
+  <key>STORAGE_BUCKET</key>
+  <string>demo-carpil.appspot.com</string>
+  <key>IS_ADS_ENABLED</key><false/>
+  <key>IS_ANALYTICS_ENABLED</key><false/>
+  <key>IS_GCM_ENABLED</key><true/>
+  <key>IS_SIGNIN_ENABLED</key><true/>
+  <key>GOOGLE_APP_ID</key>
+  <string>1:000000000000:ios:0000000000000000</string>
+</dict>
+</plist>
+EOF
+  echo "  ✓ app/GoogleService-Info.plist (placeholder local)"
+fi

@@ -95,9 +95,15 @@ else
   esac
 fi
 
-FLAGS=""
-$RUN_IOS     && FLAGS="$FLAGS --ios"
-$RUN_ANDROID && FLAGS="$FLAGS --android"
-
-echo -e "\n→ Iniciando app en ${YELLOW}$(echo $FLAGS | xargs)${RESET}..."
-cd app && yarn start $FLAGS
+if $RUN_IOS && $RUN_ANDROID; then
+  echo -e "\n→ Iniciando en ${YELLOW}iOS${RESET}..."
+  cd app && yarn ios
+  echo -e "\n→ Iniciando en ${YELLOW}Android${RESET}..."
+  yarn android
+elif $RUN_IOS; then
+  echo -e "\n→ Iniciando en ${YELLOW}iOS${RESET}..."
+  cd app && yarn ios
+elif $RUN_ANDROID; then
+  echo -e "\n→ Iniciando en ${YELLOW}Android${RESET}..."
+  cd app && yarn android
+fi
