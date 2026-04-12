@@ -36,7 +36,7 @@ Luego continúa con `make setup`.
 | Herramienta | Requerido por | Instalación |
 |---|---|---|
 | Docker + Docker Compose | API | `brew install --cask docker` |
-| Node.js 22+ | App + Seed | [nodejs.org](https://nodejs.org) |
+| Node.js 22 | App + Seed | `fnm install 22 && fnm use 22` |
 | Java 11+ | Firebase Emulator | `brew install openjdk@11` |
 | make | Orquestador | `brew install make` |
 | Infisical CLI | Solo equipo interno | `brew install infisical/get-cli/infisical` |
