@@ -112,6 +112,6 @@ clean:
 	rm -rf app/google-services.json app/GoogleService-Info.plist
 	rm -rf app/.npmrc
 	rm -rf firebase/emulator-data
-	@echo "→ Eliminando variables de entorno..."
-	rm -f app/.env api/.env .env
+	@echo "→ Eliminando variables de entorno generadas..."
+	rm -f app/.env api/.env
 	@echo "$(CYAN)✓ Reset completo. Corre 'make setup' para reiniciar.$(RESET)"
