@@ -62,7 +62,7 @@ setup/deps:
 #  Dev
 # ──────────────────────────────────────────
 dev:
-	make -j3 dev/firebase dev/api dev/app
+	@bash scripts/dev.sh
 
 dev/firebase:
 	@echo "→ Iniciando Firebase Emulator Suite..."
