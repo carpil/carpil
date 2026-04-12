@@ -76,4 +76,29 @@ else
   echo -e "  ⚠ No se encontraron secrets con prefijo API_"
 fi
 
+# ──────────────────────────────────────────
+#  Escribir archivos de Google Services
+# ──────────────────────────────────────────
+echo "→ Escribiendo archivos de Google Services..."
+
+infisical secrets get GOOGLE_SERVICES_JSON \
+  --env="$INFISICAL_ENV" \
+  --projectId="$INFISICAL_PROJECT_ID" \
+  --plain 2>/dev/null > app/google-services.json
+echo -e "  ${GREEN}✓ app/google-services.json${RESET}"
+
+infisical secrets get GOOGLE_SERVICE_INFO_PLIST \
+  --env="$INFISICAL_ENV" \
+  --projectId="$INFISICAL_PROJECT_ID" \
+  --plain 2>/dev/null > app/GoogleService-Info.plist
+echo -e "  ${GREEN}✓ app/GoogleService-Info.plist${RESET}"
+
+# ──────────────────────────────────────────
+#  Expo Prebuild
+# ──────────────────────────────────────────
+echo "→ Corriendo expo prebuild..."
+cd app && npx expo prebuild --no-install --platform all 2>/dev/null
+echo -e "  ${GREEN}✓ Carpetas ios/ y android/ generadas${RESET}"
+cd ..
+
 echo -e "${GREEN}✓ Entorno '$ENV' listo.${RESET}"
