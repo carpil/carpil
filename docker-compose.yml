@@ -14,6 +14,8 @@ services:
       PORT: 3000
       NODE_ENV: development
       FIREBASE_PROJECT_ID: demo-carpil
+      GOOGLE_CLOUD_PROJECT: demo-carpil
+      GCLOUD_PROJECT: demo-carpil
       FIRESTORE_EMULATOR_HOST: host.docker.internal:8080
       FIREBASE_AUTH_EMULATOR_HOST: http://host.docker.internal:9099
       FIREBASE_STORAGE_EMULATOR_HOST: host.docker.internal:9199
