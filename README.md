@@ -40,6 +40,7 @@ Luego continúa con `make setup`.
 | Java 11+ | Firebase Emulator | `brew install openjdk@11` |
 | make | Orquestador | `brew install make` |
 | Infisical CLI | Solo equipo interno | `brew install infisical/get-cli/infisical` |
+| gum | Recomendado | `brew install gum` |
 
 > Colaboradores OSS no necesitan Infisical CLI.
 

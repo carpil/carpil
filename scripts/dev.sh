@@ -61,29 +61,37 @@ wait_for_port 3000 "API"
 #  3. App — selección de plataforma
 # ──────────────────────────────────────────
 echo -e "\n${CYAN}[3/3] App${RESET}"
-echo -e "  ¿En qué plataforma quieres correr la app?\n"
-echo    "    1) iOS"
-echo    "    2) Android"
-echo    "    3) Ambas"
-echo ""
-printf "  → Selección [1/2/3]: "
-read -r PLATFORM
 
-case $PLATFORM in
-  1)
-    echo -e "\n→ Iniciando en ${YELLOW}iOS${RESET}..."
-    cd app && yarn start --ios
-    ;;
-  2)
-    echo -e "\n→ Iniciando en ${YELLOW}Android${RESET}..."
-    cd app && yarn start --android
-    ;;
-  3)
-    echo -e "\n→ Iniciando en ${YELLOW}iOS + Android${RESET}..."
-    cd app && yarn start --ios --android
-    ;;
-  *)
-    echo -e "  ${RED}Opción inválida. Iniciando Expo sin plataforma específica...${RESET}"
-    cd app && yarn start
-    ;;
-esac
+RUN_IOS=false
+RUN_ANDROID=false
+
+if command -v gum > /dev/null 2>&1; then
+  PLATFORMS=$(gum choose --no-limit \
+    --header "¿En qué plataforma quieres correr la app? (Space para seleccionar, Enter para confirmar)" \
+    "iOS" \
+    "Android")
+
+  echo "$PLATFORMS" | grep -q "iOS"     && RUN_IOS=true
+  echo "$PLATFORMS" | grep -q "Android" && RUN_ANDROID=true
+else
+  echo -e "  ${YELLOW}Tip: instala 'gum' para una selección interactiva (brew install gum)${RESET}\n"
+  echo    "    1) iOS"
+  echo    "    2) Android"
+  echo    "    3) Ambas"
+  echo ""
+  printf "  → Selección [1/2/3]: "
+  read -r CHOICE
+  case $CHOICE in
+    1) RUN_IOS=true ;;
+    2) RUN_ANDROID=true ;;
+    3) RUN_IOS=true; RUN_ANDROID=true ;;
+    *) RUN_IOS=true; RUN_ANDROID=true ;;
+  esac
+fi
+
+FLAGS=""
+$RUN_IOS     && FLAGS="$FLAGS --ios"
+$RUN_ANDROID && FLAGS="$FLAGS --android"
+
+echo -e "\n→ Iniciando app en ${YELLOW}$(echo $FLAGS | xargs)${RESET}..."
+cd app && yarn start $FLAGS
