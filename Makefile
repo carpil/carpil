@@ -1,4 +1,4 @@
-.PHONY: help setup dev seed clean \
+.PHONY: help setup dev seed clean reset/tokens \
         setup/submodules setup/deps setup/env \
         dev/firebase dev/api dev/app \
         env/dev env/preview env/production
@@ -34,6 +34,8 @@ help:
 	@echo "  make env/dev          Jala secrets de desarrollo desde Infisical"
 	@echo "  make env/preview      Jala secrets de preview desde Infisical"
 	@echo "  make env/production   Jala secrets de producción desde Infisical"
+	@echo ""
+	@echo "  make reset/tokens     Resetea INFISICAL_TOKEN y NPM_TOKEN (tokens vencidos)"
 	@echo ""
 
 # ──────────────────────────────────────────
@@ -97,6 +99,15 @@ env/preview:
 
 env/production:
 	@bash scripts/pull-env.sh production
+
+# ──────────────────────────────────────────
+#  Reset tokens
+# ──────────────────────────────────────────
+reset/tokens:
+	@echo "→ Reseteando tokens en .env..."
+	@sed -i.bak "s|NPM_TOKEN_GOOGLE_SIGN_IN=.*|NPM_TOKEN_GOOGLE_SIGN_IN=|" .env && rm -f .env.bak
+	@sed -i.bak "s|INFISICAL_TOKEN=.*|INFISICAL_TOKEN=|" .env && rm -f .env.bak
+	@echo "$(CYAN)✓ Tokens reseteados. Corre 'make setup' para ingresarlos de nuevo.$(RESET)"
 
 # ──────────────────────────────────────────
 #  Clean
