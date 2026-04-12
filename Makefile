@@ -52,7 +52,7 @@ setup/env:
 
 setup/deps:
 	@echo "→ Instalando dependencias de app..."
-	cd app && yarn install --frozen-lockfile
+	cd app && yarn install
 	@echo "→ Instalando dependencias de seed..."
 	cd firebase/seed && npm install --silent
 
