@@ -65,11 +65,8 @@ dev:
 	@bash scripts/dev.sh
 
 dev/firebase:
-	@echo "→ Iniciando Firebase Emulator Suite..."
-	cd firebase && firebase emulators:start \
-		--project demo-carpil \
-		--import ./emulator-data \
-		--export-on-exit ./emulator-data
+	@echo "→ Iniciando Firebase Emulator Suite (Docker)..."
+	docker compose up firebase
 
 dev/api:
 	@echo "→ Iniciando API..."

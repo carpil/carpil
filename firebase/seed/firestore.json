@@ -1,44 +1,82 @@
 {
   "users": [
     {
-      "__id": "user_driver_01",
-      "uid": "user_driver_01",
-      "displayName": "Carlos Méndez",
-      "email": "carlos@demo.carpil",
-      "role": "driver",
-      "rating": 4.8,
-      "ridesCompleted": 42
+      "__id": "seed_alejandro_01",
+      "id": "seed_alejandro_01",
+      "name": "Alejandro Carpil",
+      "firstName": "Alejandro",
+      "lastName": "Carpil",
+      "phoneNumber": "88888888",
+      "email": "alejandro@carpil.app",
+      "profilePicture": "",
+      "isDriver": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
     },
     {
-      "__id": "user_passenger_01",
-      "uid": "user_passenger_01",
-      "displayName": "Lucía Torres",
-      "email": "lucia@demo.carpil",
-      "role": "passenger",
-      "rating": 4.9,
-      "ridesCompleted": 15
+      "__id": "seed_melissa_01",
+      "id": "seed_melissa_01",
+      "name": "Melissa Carpil",
+      "firstName": "Melissa",
+      "lastName": "Carpil",
+      "phoneNumber": "77777777",
+      "email": "melissa@carpil.app",
+      "profilePicture": "",
+      "isDriver": false,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
     }
   ],
   "rides": [
     {
-      "__id": "ride_01",
-      "driverId": "user_driver_01",
+      "__id": "seed_ride_01",
+      "id": "seed_ride_01",
       "origin": {
-        "name": "Ciudad de México, CDMX",
-        "lat": 19.4326,
-        "lng": -99.1332
+        "id": "ChIJPRea9W_29I4RuPk6FfyVSxI",
+        "name": {
+          "primary": "Santa Marta",
+          "secondary": "Magdalena, Colombia"
+        },
+        "location": {
+          "lat": 11.2403547,
+          "lng": -74.2110227
+        }
       },
       "destination": {
-        "name": "Cuernavaca, Morelos",
-        "lat": 18.9242,
-        "lng": -99.2216
+        "id": "ChIJUROdrucl9o4RyiY_Ay45YbE",
+        "name": {
+          "primary": "Cartagena",
+          "secondary": "Cartagena de Indias, Bolívar, Colombia"
+        },
+        "location": {
+          "lat": 10.3932277,
+          "lng": -75.4832311
+        }
       },
-      "departureTime": "2026-04-15T08:00:00Z",
-      "seats": 3,
-      "seatsAvailable": 2,
-      "pricePerSeat": 120,
-      "currency": "MXN",
-      "status": "scheduled"
+      "availableSeats": 3,
+      "price": 3000,
+      "departureDate": "2026-06-01T08:00:00.000Z",
+      "driver": {
+        "id": "seed_alejandro_01",
+        "name": "Alejandro Carpil",
+        "profilePicture": ""
+      },
+      "status": "active",
+      "passengers": [],
+      "deletedAt": null,
+      "chatId": "seed_chat_01",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "chats": [
+    {
+      "__id": "seed_chat_01",
+      "id": "seed_chat_01",
+      "rideId": "seed_ride_01",
+      "messages": [],
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
     }
   ]
 }

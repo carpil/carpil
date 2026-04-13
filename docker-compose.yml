@@ -1,4 +1,16 @@
 services:
+  firebase:
+    build:
+      context: ./firebase
+    ports:
+      - "4000:4000"
+      - "8080:8080"
+      - "9099:9099"
+      - "9199:9199"
+    volumes:
+      - ./firebase/emulator-data:/firebase/emulator-data
+    stop_grace_period: 30s
+
   api:
     build:
       context: ./api
@@ -16,8 +28,8 @@ services:
       FIREBASE_PROJECT_ID: demo-carpil
       GOOGLE_CLOUD_PROJECT: demo-carpil
       GCLOUD_PROJECT: demo-carpil
-      FIRESTORE_EMULATOR_HOST: host.docker.internal:8080
-      FIREBASE_AUTH_EMULATOR_HOST: http://host.docker.internal:9099
-      FIREBASE_STORAGE_EMULATOR_HOST: host.docker.internal:9199
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      FIRESTORE_EMULATOR_HOST: firebase:8080
+      FIREBASE_AUTH_EMULATOR_HOST: firebase:9099
+      FIREBASE_STORAGE_EMULATOR_HOST: firebase:9199
+    depends_on:
+      - firebase

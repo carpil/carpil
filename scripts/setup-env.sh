@@ -167,7 +167,7 @@ if [ ! -f app/google-services.json ]; then
         "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
         "android_client_info": { "package_name": "com.carpil.carpil" }
       },
-      "api_key": [{ "current_key": "local_demo_key" }],
+      "api_key": [{ "current_key": "AIzaSyDEMO00000000000000000000000000000" }],
       "services": { "appinvite_service": { "other_platform_oauth_client": [] } }
     }
   ],
@@ -188,7 +188,7 @@ if [ ! -f app/GoogleService-Info.plist ]; then
   <key>REVERSED_CLIENT_ID</key>
   <string>com.googleusercontent.apps.000000000000-local</string>
   <key>API_KEY</key>
-  <string>local_demo_key</string>
+  <string>AIzaSyDEMO00000000000000000000000000000</string>
   <key>GCM_SENDER_ID</key>
   <string>000000000000</string>
   <key>PLIST_VERSION</key>
@@ -210,3 +210,11 @@ if [ ! -f app/GoogleService-Info.plist ]; then
 EOF
   echo "  ✓ app/GoogleService-Info.plist (placeholder local)"
 fi
+
+# ──────────────────────────────────────────
+#  Expo Prebuild — genera ios/ y android/
+# ──────────────────────────────────────────
+echo "→ Generando carpetas nativas (expo prebuild)..."
+(cd app && ./node_modules/.bin/expo prebuild --no-install --platform all 2>/dev/null)
+cp app/GoogleService-Info.plist app/ios/Carpil/GoogleService-Info.plist 2>/dev/null || true
+echo -e "  ${GREEN}✓ ios/ y android/ generados${RESET}"

@@ -33,7 +33,6 @@ wait_for_port() {
 cleanup() {
   echo ""
   echo "→ Deteniendo servicios..."
-  [ -n "$FIREBASE_PID" ] && kill "$FIREBASE_PID" 2>/dev/null
   docker compose down 2>/dev/null
   echo -e "${CYAN}✓ Servicios detenidos.${RESET}"
   exit 0
@@ -41,16 +40,10 @@ cleanup() {
 trap cleanup SIGINT SIGTERM
 
 # ──────────────────────────────────────────
-#  1. Firebase Emulator
+#  1. Firebase Emulator (Docker)
 # ──────────────────────────────────────────
 echo -e "\n${CYAN}[1/3] Firebase Emulator Suite${RESET}"
-cd firebase
-firebase emulators:start \
-  --project demo-carpil \
-  --import ./emulator-data \
-  --export-on-exit ./emulator-data &
-FIREBASE_PID=$!
-cd ..
+docker compose up -d firebase
 
 wait_for_port 8080 "Firestore"
 wait_for_port 9099 "Auth"
@@ -60,7 +53,7 @@ wait_for_port 4000 "Emulator UI"
 #  2. API
 # ──────────────────────────────────────────
 echo -e "\n${CYAN}[2/3] API${RESET}"
-docker compose up -d
+docker compose up -d api
 wait_for_port 3000 "API"
 
 # ──────────────────────────────────────────

@@ -100,11 +100,45 @@ infisical secrets get GOOGLE_SERVICE_INFO_PLIST \
 echo -e "  ${GREEN}✓ app/GoogleService-Info.plist${RESET}"
 
 # ──────────────────────────────────────────
+#  Verificar NPM_TOKEN_GOOGLE_SIGN_IN
+# ──────────────────────────────────────────
+if [ -f .env ]; then set -a; source .env; set +a; fi
+
+if [ -z "$NPM_TOKEN_GOOGLE_SIGN_IN" ]; then
+  echo "  → Obteniendo NPM_TOKEN_GOOGLE_SIGN_IN desde Infisical..."
+  NPM_TOKEN=$(infisical secrets get NPM_TOKEN_GOOGLE_SIGN_IN \
+    --env=dev \
+    --projectId="$INFISICAL_PROJECT_ID" \
+    --plain 2>/dev/null)
+
+  if [ -z "$NPM_TOKEN" ]; then
+    echo -e "${RED}✗ No se encontró NPM_TOKEN_GOOGLE_SIGN_IN en Infisical.${RESET}"
+    exit 1
+  fi
+
+  if grep -q "NPM_TOKEN_GOOGLE_SIGN_IN" .env 2>/dev/null; then
+    sed -i.bak "s|NPM_TOKEN_GOOGLE_SIGN_IN=.*|NPM_TOKEN_GOOGLE_SIGN_IN=$NPM_TOKEN|" .env && rm -f .env.bak
+  else
+    echo "NPM_TOKEN_GOOGLE_SIGN_IN=$NPM_TOKEN" >> .env
+  fi
+  export NPM_TOKEN_GOOGLE_SIGN_IN="$NPM_TOKEN"
+  echo -e "  ${GREEN}✓ NPM_TOKEN_GOOGLE_SIGN_IN obtenido desde Infisical${RESET}"
+fi
+
+printf "@react-native-google-signin:registry=https://npm.pkg.github.com\n" > app/.npmrc
+printf "//npm.pkg.github.com/:_authToken=%s\n" "$NPM_TOKEN_GOOGLE_SIGN_IN" >> app/.npmrc
+
+# ──────────────────────────────────────────
 #  Expo Prebuild
 # ──────────────────────────────────────────
 echo "→ Corriendo expo prebuild..."
-cd app && npx expo prebuild --no-install --platform all 2>/dev/null
+if [ ! -d "app/node_modules" ]; then
+  echo "  → Instalando dependencias de app..."
+  (cd app && yarn install --silent)
+fi
+rm -rf app/ios app/android
+(cd app && ./node_modules/.bin/expo prebuild --no-install --platform all)
+cp app/GoogleService-Info.plist app/ios/Carpil/GoogleService-Info.plist
 echo -e "  ${GREEN}✓ Carpetas ios/ y android/ generadas${RESET}"
-cd ..
 
 echo -e "${GREEN}✓ Entorno '$ENV' listo.${RESET}"
