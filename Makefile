@@ -1,7 +1,8 @@
 .PHONY: help setup dev seed clean reset/tokens \
         setup/submodules setup/deps setup/env \
         dev/firebase dev/api dev/app \
-        env/dev env/preview env/production
+        env/dev env/preview env/production \
+        e2e e2e/login e2e/build/android e2e/build/ios
 
 # ──────────────────────────────────────────
 #  Carga .env automáticamente si existe
@@ -36,6 +37,11 @@ help:
 	@echo "  make env/production   Jala secrets de producción desde Infisical"
 	@echo ""
 	@echo "  make reset/tokens     Resetea INFISICAL_TOKEN y NPM_TOKEN (tokens vencidos)"
+	@echo ""
+	@echo "  make e2e              Corre todos los flows de Maestro localmente"
+	@echo "  make e2e/login        Corre solo el flow de login"
+	@echo "  make e2e/build/android  Genera APK standalone para e2e (Android)"
+	@echo "  make e2e/build/ios      Genera .app standalone para e2e (iOS)"
 	@echo ""
 
 # ──────────────────────────────────────────
@@ -105,6 +111,25 @@ reset/tokens:
 	@sed -i.bak "s|NPM_TOKEN_GOOGLE_SIGN_IN=.*|NPM_TOKEN_GOOGLE_SIGN_IN=|" .env && rm -f .env.bak
 	@sed -i.bak "s|INFISICAL_TOKEN=.*|INFISICAL_TOKEN=|" .env && rm -f .env.bak
 	@echo "$(CYAN)✓ Tokens reseteados. Corre 'make setup' para ingresarlos de nuevo.$(RESET)"
+
+# ──────────────────────────────────────────
+#  E2E (Maestro)
+# ──────────────────────────────────────────
+e2e:
+	@bash scripts/e2e.sh
+
+e2e/login:
+	@bash scripts/e2e.sh app/maestro/login.yaml
+
+e2e/build/android:
+	@echo "→ Generando APK e2e (Android)..."
+	cd app && eas build --profile e2e-test --platform android --local
+	@echo "$(CYAN)✓ APK generado. Instálalo con: adb install <path>.apk$(RESET)"
+
+e2e/build/ios:
+	@echo "→ Generando .app e2e (iOS Simulator)..."
+	cd app && eas build --profile e2e-test --platform ios --local
+	@echo "$(CYAN)✓ .app generado. Instálalo con: xcrun simctl install booted <path>.app$(RESET)"
 
 # ──────────────────────────────────────────
 #  Clean
