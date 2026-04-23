@@ -1,0 +1,64 @@
+name: Sync submodules
+
+on:
+  # Triggered immediately by sub-repos via repository_dispatch.
+  # Requires CARPIL_SYNC_TOKEN (PAT with repo scope) stored in carpil/app and carpil/api.
+  # Until that token is added, the schedule below keeps submodules in sync.
+  repository_dispatch:
+    types: [submodule-updated]
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Update submodules to latest main
+        id: update
+        run: |
+          git submodule update --remote
+
+          if git diff --quiet HEAD; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "app_sha=$(git -C app rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+            echo "api_sha=$(git -C api rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: peter-evans/create-pull-request@v7
+        if: steps.update.outputs.changed == 'true'
+        id: pr
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: chore/sync-submodules
+          commit-message: |
+            chore: sync submodules
+
+            - app → ${{ steps.update.outputs.app_sha }}
+            - api → ${{ steps.update.outputs.api_sha }}
+          title: "chore: sync submodules"
+          body: |
+            Automated submodule update.
+
+            | Submodule | SHA |
+            |-----------|-----|
+            | `app` | `${{ steps.update.outputs.app_sha }}` |
+            | `api` | `${{ steps.update.outputs.api_sha }}` |
+          labels: automated
+          delete-branch: true
+
+      - name: Enable auto-merge
+        if: steps.pr.outputs.pull-request-operation == 'created' || steps.pr.outputs.pull-request-operation == 'updated'
+        run: gh pr merge --auto --squash "${{ steps.pr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
