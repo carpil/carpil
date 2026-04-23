@@ -56,14 +56,44 @@ Luego continúa con `make setup`.
 | `make env/preview` | Jala secrets de preview desde Infisical |
 | `make env/production` | Jala secrets de producción desde Infisical |
 
+## Pipeline CI/CD
+
+Trunk-based con release-please. Una sola rama long-lived: `main`.
+
+```
+feat/CARPIL-123  ──PR──►  main
+                            │
+                            ├─► API → Railway development (auto)
+                            ├─► App → OTA dev o EAS build (según fingerprint)
+                            └─► release-please abre Release PR
+
+                  Release PR merge ──►  tag vX.Y.Z
+                            │
+                            ├─► API → Railway staging (auto)
+                            ├─► App → TestFlight Internal + Play Internal
+                            ├─► E2E Maestro → Android + iOS (gate)
+                            └─► (aprobación manual) → producción
+```
+
+Ver [RELEASING.md](./RELEASING.md) para el flujo completo.
+
+## Observabilidad
+
+| Herramienta | Uso |
+|------------|-----|
+| [Sentry](https://sentry.io) | Errores, crashes, distributed tracing app ↔ API |
+| [PostHog](https://posthog.com) | Analytics de producto, session replay |
+
 ## Estructura
 
 ```
 carpil/
-├── firebase/          # Emulator Suite + datos semilla
+├── .github/workflows/ # Submodule sync automático
+├── firebase/          # Reglas de Firestore/Storage + emulator
 ├── scripts/           # Scripts de setup
 ├── app/               # React Native (submódulo)
 ├── api/               # Node.js API (submódulo)
 ├── Makefile
+├── RELEASING.md       # Cómo hacer releases
 └── docker-compose.yml
 ```

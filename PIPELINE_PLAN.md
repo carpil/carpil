@@ -183,7 +183,7 @@ feature/CARPIL-123  ──PR──►  main
 
 ---
 
-### Fase 5 — Observabilidad (3-4 h) [post-lunes]
+### Fase 5 — Observabilidad ✅ COMPLETADA (2026-04-23)
 
 **Sentry distributed tracing:**
 - App: `tracesSampleRate: 1.0` en dev/preview, `0.1` en prod. Propagación de header `sentry-trace` en requests al API.
@@ -205,7 +205,7 @@ feature/CARPIL-123  ──PR──►  main
 
 ---
 
-### Fase 6 — Maestro E2E (3-4 h) [post-lunes]
+### Fase 6 — Maestro E2E ✅ COMPLETADA (2026-04-23)
 
 **Estructura `.maestro/` en `carpil/app`:**
 
@@ -250,7 +250,7 @@ feature/CARPIL-123  ──PR──►  main
 
 ---
 
-### Fase 8 — Documentación mínima (1 h) [post-lunes]
+### Fase 8 — Documentación mínima ✅ COMPLETADA (2026-04-23)
 
 - `CONTRIBUTING.md` en `app` y `api` (ver Fase 1)
 - `RELEASING.md` corto explicando el flujo de release-please
