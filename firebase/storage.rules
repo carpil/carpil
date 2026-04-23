@@ -2,8 +2,17 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
+
+    // Passengers upload SINPE mobile payment receipts for a ride.
+    // Only the uploader can write; any authenticated user can read (driver needs to verify).
+    match /rides/{rideId}/sinpe-payments/{userId} {
+      allow write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null;
+    }
+
+    // Deny all other paths.
     match /{allPaths=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }

@@ -240,7 +240,7 @@ feature/CARPIL-123  ──PR──►  main
 
 ---
 
-### Fase 7 — Firebase rules versionadas (30 min) [post-lunes]
+### Fase 7 — Firebase rules versionadas ✅ COMPLETADA (2026-04-23)
 
 - Crear `firestore.rules` y `storage.rules` en `carpil/api/firebase/`
 - CI job que valida sintaxis con `firebase deploy --only firestore:rules --dry-run`
