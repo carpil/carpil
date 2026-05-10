@@ -100,6 +100,7 @@ If a pre-commit hook catches something, fix it and create a **new** commit (neve
   ```
   release-please tag format must match the workflow trigger pattern. Past mismatch (`carpil-v1.1.2` vs `v*`) silently skipped a deploy.
 - **Resolve known blockers from prior sessions first.** If a prior session left an item marked PRIORIDAD ALTA, P0, or "fix next session," do it before starting new work.
+- **Verify audit citations before branching.** `DECISION_AUDIT.md` and `OCTALYSIS_VIRAL_AUDIT.md` cite `file:line` from a 2026-05-07 snapshot — some have already drifted. Concrete example: the audit blamed `api/src/index.ts:74` for the unauth phone leak, but `api/package.json` `start: node build/main.js` shows production runs the modular `main.ts` (legacy `index.ts` is stale). Before opening a P0 fix branch, run a 5-min recon (grep + curl + Railway start command) to confirm the cited code is the actual prod path. If the citation is stale, fix the right file and flag the audit drift in the PR.
 
 ### Never
 - **Never push directly to `main`.** Zero exceptions — not for typos, not for one-line copy fixes, not for "trivial" changes. Every commit reaches `main` only via a branch + PR. Direct pushes flood CI, bypass auto-merge, skip review, and break the Linear issue → branch → PR → tag audit trail. If you typed `git push` and your current branch is `main`, stop and `git checkout -b <type>/<slug>` first.
