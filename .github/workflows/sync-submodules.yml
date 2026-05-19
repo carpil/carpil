@@ -2,8 +2,8 @@ name: Sync submodules
 
 on:
   # Triggered immediately by sub-repos via repository_dispatch.
-  # Requires CARPIL_SYNC_TOKEN (PAT with repo scope) stored in carpil/app and carpil/api.
-  # Until that token is added, the schedule below keeps submodules in sync.
+  # Requires CARPIL_SYNC_TOKEN (PAT with read access to carpil/app + carpil/api)
+  # stored as a secret on this repo — used to clone the private submodules.
   repository_dispatch:
     types: [submodule-updated]
   schedule:
@@ -21,6 +21,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+          token: ${{ secrets.CARPIL_SYNC_TOKEN }}
 
       - name: Update submodules to latest main
         id: update
