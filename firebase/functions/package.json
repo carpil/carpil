@@ -17,6 +17,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "expo-server-sdk": "^6.1.0",
     "firebase-admin": "^13.0.2",
     "firebase-functions": "^6.1.1"
   },

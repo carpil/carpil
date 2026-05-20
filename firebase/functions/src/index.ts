@@ -6,3 +6,9 @@ initializeApp()
 export const healthcheck = onRequest({ region: 'us-central1' }, (_req, res) => {
   res.status(200).json({ status: 'ok', service: 'carpil-functions' })
 })
+
+export {
+  rideLifecycleDev,
+  rideLifecycleStaging,
+  rideLifecycleProd
+} from './scheduled/ride-lifecycle'
