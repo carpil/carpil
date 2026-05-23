@@ -1,6 +1,7 @@
 [submodule "app"]
 	path = app
 	url = git@github.com:carpil/app.git
+	branch = develop
 [submodule "api"]
 	path = api
 	url = git@github.com:carpil/api.git
