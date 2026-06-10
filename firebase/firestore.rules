@@ -34,6 +34,23 @@ service cloud.firestore {
       allow create: if request.auth != null;
     }
 
+    // Passenger-originated demand (MS1.4). The document is redacted by construction
+    // — no PII, no demographics (CARPIL-217); intracity origin is a zone centroid,
+    // never an exact pin. All writes go through the API (Admin SDK), which enriches
+    // geo fields, computes status/expiry and enforces transitions, so clients never
+    // write directly.
+    match /trip_requests/{tripRequestId} {
+      allow read:  if true;
+      allow write: if false;
+
+      // KYC-safe member projection only (name/photo/verified/rating); counters are
+      // kept consistent server-side, so member writes are server-only too.
+      match /members/{memberId} {
+        allow read:  if true;
+        allow write: if false;
+      }
+    }
+
     match /chats/{chatId} {
       allow read, write: if request.auth != null;
       allow delete: if request.auth != null

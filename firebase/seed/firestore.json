@@ -78,5 +78,55 @@
       "createdAt": "2026-01-01T00:00:00.000Z",
       "updatedAt": "2026-01-01T00:00:00.000Z"
     }
+  ],
+  "trip_requests": [
+    {
+      "__id": "seed_trip_request_01",
+      "id": "seed_trip_request_01",
+      "creator": "seed_melissa_01",
+      "origin": {
+        "id": "ChIJPRea9W_29I4RuPk6FfyVSxI",
+        "name": {
+          "primary": "Santa Marta",
+          "secondary": "Magdalena, Colombia"
+        },
+        "location": {
+          "lat": 11.2403547,
+          "lng": -74.2110227
+        },
+        "geohash": "d3gpzq1pvc",
+        "kind": "place"
+      },
+      "destination": {
+        "id": "ChIJUROdrucl9o4RyiY_Ay45YbE",
+        "name": {
+          "primary": "Cartagena",
+          "secondary": "Cartagena de Indias, Bolívar, Colombia"
+        },
+        "location": {
+          "lat": 10.3932277,
+          "lng": -75.4832311
+        },
+        "geohash": "d3f74k4bcn",
+        "kind": "place"
+      },
+      "matchScope": "intercity",
+      "window": {
+        "earliest": "2026-05-31T00:00:00.000Z",
+        "latest": "2026-06-02T23:59:00.000Z",
+        "flexibilityMinutes": 60
+      },
+      "seatsNeeded": 1,
+      "pooledSeats": 1,
+      "memberCount": 1,
+      "status": "open",
+      "clusterKey": "d3gpz|d3f74|2026-06-01",
+      "matchedRideId": null,
+      "proposedByDriver": null,
+      "expiresAt": "2026-06-02T23:59:00.000Z",
+      "deletedAt": null,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
   ]
 }
