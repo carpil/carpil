@@ -108,3 +108,5 @@ No orchestrator-level tests. CI runs a boot-only Firestore + Storage rules check
 - **Never `git add -A` / `git add .`** Reason: risks staging `.env`, secrets, build artifacts. Stage by name.
 
 - **Never `--no-verify` / `--no-gpg-sign`** unless explicitly requested. Reason: hook bypass is an exception, not a default.
+
+- **Delete the workspace once its PR merges.** Conductor/worktree workspaces are ephemeral: create → merge → delete. Reason: each `app/` worktree carries ~2GB of `node_modules`; stale ones accumulate and eat disk with zero value once merged. Don't hoard workspaces.
