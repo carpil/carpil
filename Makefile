@@ -1,7 +1,8 @@
 .PHONY: help setup dev seed clean reset/tokens \
         setup/submodules setup/deps setup/env \
         dev/firebase dev/api dev/app \
-        env/dev env/preview env/production
+        env/dev env/preview env/production \
+        test/rules
 
 # ──────────────────────────────────────────
 #  Carga .env automáticamente si existe
@@ -30,6 +31,8 @@ help:
 	@echo "  make dev/firebase     Solo emulador de Firebase"
 	@echo "  make dev/api          Solo API (Docker)"
 	@echo "  make dev/app          Solo React Native"
+	@echo ""
+	@echo "  make test/rules       Corre los tests de reglas de Firestore y Storage (emulador)"
 	@echo ""
 	@echo "  make env/dev          Jala secrets de desarrollo desde Infisical"
 	@echo "  make env/preview      Jala secrets de preview desde Infisical"
@@ -77,6 +80,12 @@ dev/app:
 	cd app && yarn start
 
 # ──────────────────────────────────────────
+#  Tests
+# ──────────────────────────────────────────
+test/rules:
+	@bash scripts/test-rules.sh
+
+# ──────────────────────────────────────────
 #  Seed
 # ──────────────────────────────────────────
 seed:
@@ -115,6 +124,7 @@ clean:
 	@echo "→ Eliminando dependencias..."
 	rm -rf app/node_modules
 	rm -rf firebase/seed/node_modules
+	rm -rf firebase/rules-tests/node_modules
 	@echo "→ Eliminando archivos generados..."
 	rm -rf app/ios app/android
 	rm -rf app/google-services.json app/GoogleService-Info.plist
