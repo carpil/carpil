@@ -1,61 +1,65 @@
 rules_version = '2';
 
+// The API and Functions use the Admin SDK, which bypasses these rules. Everything here
+// describes what the mobile client may do directly, which is almost nothing: the API owns
+// every write except marking a chat message as seen.
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Public read — passengers browse rides without logging in.
-    // Writes (join/leave/soft-delete) are gated to authenticated users with ownership / passenger checks.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // The ride screen listens to one ride doc. Listing stays closed so a signed-in client
+    // can't bulk-scrape every route (V4).
     match /rides/{rideId} {
-      allow read: if true;
-      allow create: if request.auth != null;
-      allow delete: if request.auth != null
-                    && resource.data.creator == request.auth.uid;
-      allow update: if request.auth != null && (
-        request.resource.data.passengers == resource.data.passengers + [request.auth.uid] ||
-        request.resource.data.passengers == resource.data.passengers - [request.auth.uid] ||
-        (
-          request.auth.uid == resource.data.creator &&
-          request.resource.data.deletedAt == request.time
-        )
-      );
+      allow get: if isSignedIn();
+      allow list, write: if false;
     }
 
-    // CARPIL-281 (M9.1-A): require authentication for /users reads to prevent
-    // unauth Web SDK dumping of user PII (phoneNumber, pushToken, etc.).
-    // Broader tightening to (auth.uid == uid) + redacted server endpoints is M9.2-B.
+    // verification.*, isDriver and role gate privileged API actions, so the client must
+    // never write this doc (V2). The app only listens to its own.
     match /users/{uid} {
-      allow create: if request.auth != null && request.auth.uid == uid;
-      allow read:   if request.auth != null;
-      allow write:  if request.auth != null && request.auth.uid == uid;
-    }
-
-    match /ride_requests/{rideId} {
-      allow read:   if true;
-      allow create: if request.auth != null;
+      allow get: if isOwner(uid);
+      allow list, write: if false;
     }
 
     match /chats/{chatId} {
-      allow read, write: if request.auth != null;
-      allow delete: if request.auth != null
-                    && resource.data.owner.id == request.auth.uid;
+      allow read, write: if false;
 
       match /messages/{messageId} {
-        allow read, write: if request.auth != null
-                           && request.auth.uid in
-                              get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        function isParticipant() {
+          return isSignedIn()
+            && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        }
+
+        // Released app versions overwrite seenBy with a stale copy plus their own uid, so
+        // a concurrent reader's uid can drop out. Rejecting that would hide the message on
+        // screen, so the rule only checks that the caller adds nobody but themselves and
+        // stays in the list.
+        function isMarkingSeen() {
+          let stored = resource.data.get('seenBy', []);
+          let before = stored == null ? [] : stored;
+          let after = request.resource.data.get('seenBy', null);
+          return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['seenBy'])
+            && after is list
+            && request.auth.uid in after
+            && after.size() <= before.size() + 1
+            && after.toSet().difference(before.toSet()).hasOnly([request.auth.uid]);
+        }
+
+        allow read: if isParticipant();
+        allow update: if isParticipant() && isMarkingSeen();
+        allow create, delete: if false;
       }
     }
 
-    // Driver applications: each user owns their own application(s).
-    // Status updates (approve/reject) go through the API (Admin SDK bypasses rules).
-    match /driver_applications/{applicationId} {
-      allow create: if request.auth != null
-                    && request.resource.data.userId == request.auth.uid;
-      allow read, update: if request.auth != null
-                          && resource.data.userId == request.auth.uid;
-    }
-
-    // Explicit safety net — Firestore defaults to deny, but this makes it audit-friendly.
+    // driver_applications, ride-requests, trip_requests, vehicles, payments, ratings and
+    // every other collection are API-only.
     match /{document=**} {
       allow read, write: if false;
     }
