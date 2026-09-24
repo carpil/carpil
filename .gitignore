@@ -37,3 +37,20 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Internal — NOT for the public repo (business docs, audits, tooling context, tokens)
+.mcp.json
+.design-bundle/
+SECURITY_AUDIT.md
+AC_AUDIT_REPORT.md
+DECISION_AUDIT.md
+IDCF_FRAMEWORK.md
+LINEAR_ISSUES_BATCH.md
+OCTALYSIS_VIRAL_AUDIT.md
+VIRAL_OCTALYSIS_FRAMEWORK.md
+OTA_STRATEGY.md
+PROPUESTA_CONDUCTORES.md
+SCRIPT_LLAMADA_CONDUCTORES.md
+REORG_PLAN.md
+VIAJES_BUGS_PENDIENTES.md
+decisions/
