@@ -1,6 +1,6 @@
 # Carpil — Orchestrator
 
-LATAM carpooling app, live on the App Store and Google Play with active users. Umbrella repo over two submodules: `app/` (React Native + Expo) and `api/` (Node + Express + TypeScript). Backend: Firebase (Auth + Firestore in `nam5` with `(default)` / `staging` / `prod` DBs) and Functions Gen 2 in `firebase/functions/`. Hosting: Railway (API), EAS (app builds), Cloudflare (DNS). Secrets via Infisical, observability via Sentry + Crashlytics + PostHog.
+LATAM carpooling app, live on the App Store and Google Play with active users. Umbrella repo over two submodules: `app/` (React Native + Expo) and `api/` (Node + Express + TypeScript). Backend: Firebase (Auth + Firestore in `nam5` with `(default)` / `staging` / `prod` DBs) and Functions Gen 2 in `firebase/functions/`. Hosting: Railway (API), EAS (app builds), Cloudflare (DNS). Secrets in Railway (API), EAS (app) and Vercel (`blog`), observability via Sentry + Crashlytics + PostHog.
 
 ## Layout
 
@@ -13,8 +13,8 @@ carpil/
 │   ├── seed/           # Firestore seed (npm)
 │   ├── firestore.rules
 │   └── storage.rules
-├── scripts/            # setup, dev, env pulls, token reset
-├── decisions/          # legacy (being retired — Linear is canonical)
+├── scripts/            # setup, dev, rules tests, Conductor provisioning
+├── decisions/          # legacy, gitignored
 ├── .github/workflows/  # CI + submodule sync
 └── Makefile
 ```
@@ -28,9 +28,8 @@ carpil/
 | Production | `production` | `api.carpil.app` | `prod` |
 
 - Hosting: Railway (API), EAS (app builds), Cloudflare (DNS).
-- Secrets: Infisical project `41a4242c-4634-4662-9d5d-bf90c31f841e`, envs `dev` / `preview` / `prod`. Pull locally via `make env/*`.
+- Secrets: each platform is the source of truth for its service — Railway environment variables (API), EAS environment variables (app), Vercel environment variables (`blog`). Pull locally with `railway variable list --environment <env> --kv`, `eas env:pull --environment <env>`, `vercel env pull --environment <env>`.
 - Observability: Sentry, Crashlytics, PostHog.
-- **Linear is the roadmap source of truth.** Workspace `carpil`, team `CARPIL` (`9a77469a-...`). Roadmap: 8 NEW-EP* epics, 51 milestones, 217 issues. Every issue has description + AC + estimate + dependencies — don't re-derive scope already on an issue. For bulk operations use a personal API key + GraphQL via `curl` (OAuth via MCP is unreliable in remote sessions).
 - Stitch: project `17174419702346855076`, design system `Carpil Nebula — Vibrant`. Canonical URL: `https://stitch.withgoogle.com/projects/{pid}/screens/{sid}`.
 - Emulator ports: Auth 9099, Firestore 8080, Storage 9199, Functions 5001, UI 4000.
 
@@ -42,8 +41,7 @@ carpil/
 - `make dev` — Firebase emulator + API + app in parallel, with interactive iOS/Android picker via `gum` in `scripts/dev.sh`
 - `make dev/{firebase,api,app}` — single service only (docker compose for firebase + api; Expo for app)
 - `make seed` — seed emulator Firestore (`firebase/seed/seed.js`, Node)
-- `make env/{dev,preview,production}` — pull secrets from Infisical CLI for that env
-- `make reset/tokens` — reset `INFISICAL_TOKEN` + `NPM_TOKEN_GOOGLE_SIGN_IN`
+- `make reset/tokens` — reset `NPM_TOKEN_GOOGLE_SIGN_IN`
 - `make clean` — stop containers + wipe generated files
 
 No lint/typecheck/test at orchestrator level. For code changes, `cd` into the submodule and use its commands.
@@ -53,23 +51,23 @@ No lint/typecheck/test at orchestrator level. For code changes, `cd` into the su
 - Submodules pinned by SHA; `sync-submodules.yml` workflow (cron + `repository_dispatch`) opens PRs to bump them. To work inside a submodule, `cd` in and treat it as its own repo (own branch, commit, PR, and `CLAUDE.md`).
 - Single Firebase project `carpil` with 3 Firestore DBs in `nam5` (`(default)` / `staging` / `prod`); API + Functions pick the DB via `FIREBASE_DATABASE_ID` env (local emulator runs project `demo-carpil`).
 - Trunk-based across the umbrella: `main` is the only long-lived branch; each submodule has its own release flow (Release PRs + tags + staged deploys).
-- Secrets in Infisical (three envs: `dev` / `preview` / `prod`); pull locally via `make env/*`, never commit `.env`.
+- Secrets live in Railway / EAS / Vercel per environment; never commit `.env`.
 - Orchestrator-level CI gate: `validate-firebase-rules` (`.github/workflows/ci.yml`) boots Firestore + Storage emulators against the rules files; per-submodule CI lives in each submodule.
 
 ## External blockers
 
-Long-lead vendor / legal / approval items that gate critical milestones. Track in Linear; start procurement on day one:
+Long-lead vendor / legal / approval items that gate critical milestones. Start procurement on day one:
 
-| Blocker | Gates | Linear |
-|---|---|---|
-| Truora vendor contract + sandbox | KYC auto-verification | `M1.4-A` |
-| Stripe Connect Express approval (per country) | Driver payouts | `M14.2-A` |
-| Twilio (WhatsApp BSP) template approval | Driver MFA via WhatsApp OTP | `M7.4-A` |
-| Hacienda Factura sandbox + e-invoice spec | Factura electrónica CR | `M8.5-A1` |
-| Resend account | Transactional email | `M13.3-A` |
-| Branch / AppsFlyer / Adjust vendor pick | Deferred deep-link | `M15.2-A` |
-| Legal counsel (CR + LATAM) | Corporate ToS | `M6.1-A` |
-| Ops: 5–10 unsafe pickup zones (CR) | Pickup geofence blocklist | `M2.6-A` |
+| Blocker | Gates |
+|---|---|
+| Truora vendor contract + sandbox | KYC auto-verification |
+| Stripe Connect Express approval (per country) | Driver payouts |
+| Twilio (WhatsApp BSP) template approval | Driver MFA via WhatsApp OTP |
+| Hacienda Factura sandbox + e-invoice spec | Factura electrónica CR |
+| Resend account | Transactional email |
+| Branch / AppsFlyer / Adjust vendor pick | Deferred deep-link |
+| Legal counsel (CR + LATAM) | Corporate ToS |
+| Ops: 5–10 unsafe pickup zones (CR) | Pickup geofence blocklist |
 
 ## Testing
 
@@ -79,17 +77,11 @@ No orchestrator-level tests. CI runs a boot-only Firestore + Storage rules check
 
 - **Enter plan mode at session start.** This repo is where I spin up Claude instances that touch both submodules — plan first to avoid scope sprawl and PR bloat. Don't touch code until the plan is approved.
 
-- **Before approving the plan, surface the acceptance criteria.** Pull the AC from the Linear issue (app or api) and read them to me — we audit together for missing edge cases. AC items become the tests we write, so get them right at plan time.
+- **Before approving the plan, surface the acceptance criteria.** Write the AC into the plan and read them to me — we audit together for missing edge cases. AC items become the tests we write, so get them right at plan time. There is no issue tracker: the plan is where scope and AC live.
 
 - **Search official docs first, then surface alternatives.** Before proposing a solution, check the framework/library docs; if Option A is the obvious first answer, look for Option B before committing. Improvise only when the official docs don't cover the case. Reason: too many "first idea that fits" answers slip through when a cleaner option was one search away.
 
-- **Drive the Linear issue through its lifecycle automatically:**
-  - Plan starts → if no Linear issue exists for this work, create one
-  - Plan approved → move issue to `In Progress`
-  - PR opened → move issue to `In Review`
-  - PR merged → move issue to `Done`
-
-- **Branch / commit / PR format: see `CONTRIBUTING.md`.** Quick reference — branches: `<type>/<carpil-id>-<slug>` (e.g. `feat/carpil-123-driver-payouts`); commits: `<type>(carpil-XXX): <subject>` (conventional commits, e.g. `feat(carpil-123): add Stripe Connect Express`); types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `perf`, `ci`.
+- **Branch / commit / PR format.** Branches: `<type>/<slug>` (e.g. `feat/driver-payouts`); commits: `<type>(<scope>): <subject>` ([conventional commits](https://www.conventionalcommits.org/)), scope `carpil` by default or the area touched (e.g. `feat(carpil): add Stripe Connect Express`, `fix(security): close V2 in the rules`); types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `perf`, `ci`. PR base: `main` for the orchestrator and `api/`, `develop` for `app/`.
 
 - **Batch related work into one PR, separate by commit.** A feature that ships with a refactor + a related fix + a test goes as ONE PR with three commits — not three PRs. Old "one feature, one PR" rule produced churn. Only split when work is genuinely independent or one piece needs to ship faster.
 
@@ -97,7 +89,7 @@ No orchestrator-level tests. CI runs a boot-only Firestore + Storage rules check
 
 - **Prefer `scripts/` over inline Makefile recipes** for non-trivial logic. Reason: scripts are testable and grep-friendly; Makefile recipes are neither.
 
-- **Never push to `main` directly.** Even typos. Reason: bypasses review, floods CI, breaks the Linear → branch → PR audit trail.
+- **Never push to `main` directly.** Even typos. Reason: bypasses review, floods CI, breaks the branch → PR audit trail.
 
 - **Never bump submodule pointers manually from the orchestrator.** Reason: `sync-submodules.yml` is the single source of truth; manual bumps race the workflow.
 

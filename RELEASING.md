@@ -5,7 +5,7 @@ Carpil usa trunk-based development con [release-please](https://github.com/googl
 ## Flujo completo
 
 ```
-feature/CARPIL-123  ──PR──►  main
+feat/<slug>         ──PR──►  main
                               │
                               ├─► API: deploy automático a Railway development
                               ├─► App: OTA update al canal dev (o EAS build si cambió el fingerprint nativo)
@@ -57,6 +57,5 @@ En [carpil/app Actions](https://github.com/carpil/app/actions) y [carpil/api Act
 |--------|-------|-------------|
 | `EXPO_TOKEN` | app | EAS builds y updates |
 | `RAILWAY_TOKEN` | api | Deploy a Railway production |
-| `INFISICAL_TOKEN` | app, api | Leer secrets en CI |
 
-Todos los secrets de runtime (Firebase, Stripe, Sentry, PostHog) viven en **Infisical** y se inyectan automáticamente en Railway y en los builds de EAS.
+Los secrets de runtime (Firebase, Stripe, Sentry, PostHog) viven en las variables de cada environment de **Railway** (API) y en las variables de entorno de **EAS** (app).

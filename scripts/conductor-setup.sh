@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Provisiona un workspace nuevo de Conductor sin re-pullear de Infisical:
-# copia los archivos de config ya generados del repo original y clona
-# node_modules del app vía clonefile APFS (copy-on-write: ~15-20s por la
-# creación de inodes, pero comparte los bloques de datos → no duplica los
-# ~2GB en disco). Orientado al flujo de prueba EAS Update (JS-only), por eso
-# NO genera carpetas nativas (app/ios, app/android).
+# Provisiona un workspace nuevo de Conductor: copia los archivos de config
+# ya generados del repo original y clona node_modules del app vía clonefile
+# APFS (copy-on-write: ~15-20s por la creación de inodes, pero comparte los
+# bloques de datos → no duplica los ~2GB en disco). Orientado al flujo de
+# prueba EAS Update (JS-only), por eso NO genera carpetas nativas (app/ios,
+# app/android).
 
 if command -v fnm >/dev/null 2>&1; then
   eval "$(fnm env)"
@@ -21,7 +21,7 @@ echo "→ Provisionando workspace desde $SRC"
 # 1. Submódulos (el worktree nuevo llega sin ellos inicializados)
 git submodule update --init --recursive
 
-# 2. Archivos de config generados (fuente de verdad = repo original, no Infisical)
+# 2. Archivos de config generados (fuente de verdad = repo original)
 copy_file() {
   if [ -f "$SRC/$1" ]; then
     mkdir -p "$(dirname "$1")"
