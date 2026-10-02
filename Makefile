@@ -1,7 +1,6 @@
 .PHONY: help setup dev seed clean reset/tokens \
         setup/submodules setup/deps setup/env \
         dev/firebase dev/api dev/app \
-        env/dev env/preview env/production \
         test/rules
 
 # ──────────────────────────────────────────
@@ -34,11 +33,7 @@ help:
 	@echo ""
 	@echo "  make test/rules       Corre los tests de reglas de Firestore y Storage (emulador)"
 	@echo ""
-	@echo "  make env/dev          Jala secrets de desarrollo desde Infisical"
-	@echo "  make env/preview      Jala secrets de preview desde Infisical"
-	@echo "  make env/production   Jala secrets de producción desde Infisical"
-	@echo ""
-	@echo "  make reset/tokens     Resetea INFISICAL_TOKEN y NPM_TOKEN (tokens vencidos)"
+	@echo "  make reset/tokens     Resetea NPM_TOKEN_GOOGLE_SIGN_IN (token vencido)"
 	@echo ""
 
 # ──────────────────────────────────────────
@@ -95,24 +90,11 @@ seed:
 	node firebase/seed/seed.js
 
 # ──────────────────────────────────────────
-#  Env (Infisical)
-# ──────────────────────────────────────────
-env/dev:
-	@bash scripts/pull-env.sh dev
-
-env/preview:
-	@bash scripts/pull-env.sh preview
-
-env/production:
-	@bash scripts/pull-env.sh production
-
-# ──────────────────────────────────────────
 #  Reset tokens
 # ──────────────────────────────────────────
 reset/tokens:
 	@echo "→ Reseteando tokens en .env..."
 	@sed -i.bak "s|NPM_TOKEN_GOOGLE_SIGN_IN=.*|NPM_TOKEN_GOOGLE_SIGN_IN=|" .env && rm -f .env.bak
-	@sed -i.bak "s|INFISICAL_TOKEN=.*|INFISICAL_TOKEN=|" .env && rm -f .env.bak
 	@echo "$(CYAN)✓ Tokens reseteados. Corre 'make setup' para ingresarlos de nuevo.$(RESET)"
 
 # ──────────────────────────────────────────
