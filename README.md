@@ -39,10 +39,7 @@ Luego continúa con `make setup`.
 | Node.js 22 | App + Seed | `fnm install 22 && fnm use 22` |
 | Java 11+ | Firebase Emulator | `brew install openjdk@11` |
 | make | Orquestador | `brew install make` |
-| Infisical CLI | Solo equipo interno | `brew install infisical/get-cli/infisical` |
 | gum | Recomendado | `brew install gum` |
-
-> Colaboradores OSS no necesitan Infisical CLI.
 
 ## Comandos
 
@@ -52,16 +49,24 @@ Luego continúa con `make setup`.
 | `make dev` | Levanta Firebase + API + App en paralelo |
 | `make seed` | Carga datos semilla en el emulador |
 | `make clean` | Detiene contenedores y limpia artefactos |
-| `make env/dev` | Jala secrets de desarrollo desde Infisical |
-| `make env/preview` | Jala secrets de preview desde Infisical |
-| `make env/production` | Jala secrets de producción desde Infisical |
+| `make reset/tokens` | Resetea `NPM_TOKEN_GOOGLE_SIGN_IN` (token vencido) |
+
+## Secretos (solo equipo interno)
+
+Los colaboradores OSS corren contra los emuladores y no necesitan secretos. Para el equipo, cada plataforma es la fuente de verdad de su servicio:
+
+| Servicio | Dónde viven | Jalar a local |
+|---|---|---|
+| API | Variables de cada environment en Railway | `cd api && railway variable list --environment development --kv > .env` |
+| App | Variables de entorno de EAS | `cd app && eas env:pull --environment development --path .env` |
+| Blog ([`carpil/blog`](https://github.com/carpil/blog)) | Variables de entorno de Vercel | `vercel env pull --environment development` |
 
 ## Pipeline CI/CD
 
 Trunk-based con release-please. Una sola rama long-lived: `main`.
 
 ```
-feat/CARPIL-123  ──PR──►  main
+feat/<slug>      ──PR──►  main
                             │
                             ├─► API → Railway development (auto)
                             ├─► App → OTA dev o EAS build (según fingerprint)
